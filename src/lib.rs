@@ -1089,6 +1089,12 @@ impl<O, T: ?Sized> Hash for OwningRefMut<O, T> where T: Hash {
     }
 }
 
+impl<O: StableAddress, H: Deref> Hash for OwningHandle<O, H> where H::Target: Hash {
+    fn hash<J: Hasher>(&self, state: &mut J) {
+        self.deref().hash(state);
+    }
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // std types integration and convenience type defs
 /////////////////////////////////////////////////////////////////////////////
