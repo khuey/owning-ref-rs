@@ -754,7 +754,7 @@ pub struct OwningHandle<O, H>
     where O: StableAddress, H: Deref,
 {
     handle: H,
-    _owner: O,
+    owner: O,
 }
 
 impl<O, H> Deref for OwningHandle<O, H>
@@ -768,6 +768,22 @@ impl<O, H> Deref for OwningHandle<O, H>
 
 unsafe impl<O, H> StableAddress for OwningHandle<O, H>
     where O: StableAddress, H: StableAddress,
+{}
+
+impl<O, H: ?Sized> Clone for OwningHandle<O, H>
+    where O: CloneStableAddress, H: Deref + Clone
+{
+    fn clone(&self) -> Self {
+        OwningHandle {
+            handle: self.handle.clone(),
+            owner: self.owner.clone(),
+        }
+    }
+}
+
+unsafe impl<O, H: ?Sized> CloneStableAddress for OwningHandle<O, H>
+    where O: CloneStableAddress,
+          H: CloneStableAddress
 {}
 
 impl<O, H> DerefMut for OwningHandle<O, H>
@@ -835,7 +851,7 @@ impl<O, H> OwningHandle<O, H>
 
         OwningHandle {
           handle: h,
-          _owner: o,
+          owner: o,
         }
     }
 
@@ -853,18 +869,18 @@ impl<O, H> OwningHandle<O, H>
 
         Ok(OwningHandle {
           handle: h,
-          _owner: o,
+          owner: o,
         })
     }
 
     /// A getter for the underlying owner.
     pub fn as_owner(&self) -> &O {
-        &self._owner
+        &self.owner
     }
 
     /// Discards the dependent object and returns the owner.
     pub fn into_owner(self) -> O {
-        self._owner
+        self.owner
     }
 }
 
