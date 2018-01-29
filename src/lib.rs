@@ -882,6 +882,16 @@ impl<O, H> OwningHandle<O, H>
     pub fn into_owner(self) -> O {
         self.owner
     }
+
+    /// Circumvent Deref coercion and get a reference to the handle object.
+    pub fn deref_once(oh: &OwningHandle<O, H>) -> &H {
+        &oh.handle
+    }
+
+    /// Circumvent Deref coercion and get a mutable reference to the handle object.
+    pub fn deref_once_mut(oh: &mut OwningHandle<O, H>) -> &mut H {
+        &mut oh.handle
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////
